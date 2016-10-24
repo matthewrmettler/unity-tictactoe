@@ -8,6 +8,9 @@ public class GameController : MonoBehaviour {
 
 	public GameObject gameOverPanel;
 	public Text gameOverText;
+
+	//Count the number of moves (to figure out when it's a tie/draw)
+	private int moveCount;
 	/**
 	 * This gets called when the game starts.
 	 **/
@@ -16,6 +19,7 @@ public class GameController : MonoBehaviour {
 		SetGameControllerReferenceOnButtons ();
 		playerSide = "X";
 		gameOverPanel.SetActive(false);
+		moveCount = 0;
 	}
 
 	void SetGameControllerReferenceOnButtons ()
@@ -33,55 +37,38 @@ public class GameController : MonoBehaviour {
 
 	public void EndTurn()
 	{
-		//Top row
-		if (buttonList [0].text == playerSide && buttonList [1].text == playerSide && buttonList [2].text == playerSide)
+		checkForWin();
+		moveCount++;
+		//Check for end of game
+		if (moveCount >= 9) 
 		{
-			GameOver();
+			SetGameOverText ("It's a draw!");
 		}
-
-		//Middle row
-		if (buttonList [3].text == playerSide && buttonList [4].text == playerSide && buttonList [5].text == playerSide)
-		{
-			GameOver();
-		}
-
-		//Bottom row
-		if (buttonList [6].text == playerSide && buttonList [7].text == playerSide && buttonList [8].text == playerSide)
-		{
-			GameOver();
-		}
-
-		//Left column
-		if (buttonList [0].text == playerSide && buttonList [3].text == playerSide && buttonList [6].text == playerSide)
-		{
-			GameOver();
-		}
-
-		//Middle column
-		if (buttonList [1].text == playerSide && buttonList [4].text == playerSide && buttonList [7].text == playerSide)
-		{
-			GameOver();
-		}
-
-		//Right column
-		if (buttonList [2].text == playerSide && buttonList [5].text == playerSide && buttonList [8].text == playerSide)
-		{
-			GameOver();
-		}
-
-		//Top left to bottom right diagonal
-		if (buttonList [0].text == playerSide && buttonList [4].text == playerSide && buttonList [8].text == playerSide)
-		{
-			GameOver();
-		}
-
-		//Bottom left to top right diagonal
-		if (buttonList [2].text == playerSide && buttonList [4].text == playerSide && buttonList [6].text == playerSide)
-		{
-			GameOver();
-		}
-
+		//Otherwise, keep going
 		ChangeSides();
+	}
+
+	void checkForWin()
+	{
+		//Top row
+		if ((buttonList [0].text == playerSide && buttonList [1].text == playerSide && buttonList [2].text == playerSide)
+		//Middle row
+		|| (buttonList [3].text == playerSide && buttonList [4].text == playerSide && buttonList [5].text == playerSide)
+		//Bottom row
+		|| (buttonList [6].text == playerSide && buttonList [7].text == playerSide && buttonList [8].text == playerSide)
+		//Left column
+		|| (buttonList [0].text == playerSide && buttonList [3].text == playerSide && buttonList [6].text == playerSide)
+		//Middle column
+		|| (buttonList [1].text == playerSide && buttonList [4].text == playerSide && buttonList [7].text == playerSide)
+		//Right column
+		|| (buttonList [2].text == playerSide && buttonList [5].text == playerSide && buttonList [8].text == playerSide)
+		//Top left to bottom right diagonal
+		|| (buttonList [0].text == playerSide && buttonList [4].text == playerSide && buttonList [8].text == playerSide)
+		//Bottom left to top right diagonal
+		|| (buttonList [2].text == playerSide && buttonList [4].text == playerSide && buttonList [6].text == playerSide))
+		{
+			GameOver();
+		}
 	}
 
 	void GameOver() 
@@ -91,13 +78,19 @@ public class GameController : MonoBehaviour {
 		{
 			buttonList[i].GetComponentInParent<Button>().interactable = false;
 		}
-		gameOverPanel.SetActive (true);
-		gameOverText.text = playerSide + " Wins!";
+		gameOverPanel.SetActive(true);
+		SetGameOverText(playerSide + " Wins!");
 		Debug.Log ("Game over!");
 	}
 
 	void ChangeSides()
 	{
 		playerSide = (playerSide == "X") ? "O" : "X";
+	}
+
+	void SetGameOverText(string value)
+	{
+		gameOverPanel.SetActive(true);
+		gameOverText.text = value;
 	}
 }
