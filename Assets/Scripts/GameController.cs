@@ -2,7 +2,24 @@
 using UnityEngine.UI;
 using System.Collections;
 
+[System.Serializable]
+public class Player {
+	public Image panel;
+	public Text text;
+}
+
+[System.Serializable]
+public class PlayerColor {
+	public Color panelColor;
+	public Color textColor;
+}
+
 public class GameController : MonoBehaviour {
+	public Player playerX;
+	public Player playerO;
+	public PlayerColor activePlayerColor;
+	public PlayerColor inactivePlayerColor;
+
 	public Text[] buttonList;
 	private string playerSide;
 
@@ -36,7 +53,10 @@ public class GameController : MonoBehaviour {
 
 	public void EndTurn()
 	{
-		checkForWin();
+		if (checkForWin ()) {
+			return;
+		}
+		//No one won, keep going
 		moveCount++;
 		//Check for end of game
 		if (moveCount >= 9) 
@@ -47,7 +67,7 @@ public class GameController : MonoBehaviour {
 		ChangeSides();
 	}
 
-	void checkForWin()
+	bool checkForWin()
 	{
 		//Top row
 		if ((buttonList [0].text == playerSide && buttonList [1].text == playerSide && buttonList [2].text == playerSide)
@@ -67,7 +87,9 @@ public class GameController : MonoBehaviour {
 		|| (buttonList [2].text == playerSide && buttonList [4].text == playerSide && buttonList [6].text == playerSide))
 		{
 			GameOver(playerSide);
+			return true;
 		}
+		return false;
 	}
 
 	void GameOver(string winningPlayer) 
@@ -86,7 +108,14 @@ public class GameController : MonoBehaviour {
 
 	void ChangeSides()
 	{
+
 		playerSide = (playerSide == "X") ? "O" : "X";
+
+		if (playerSide == "X") {
+			SetPlayerColors (playerX, playerO);
+		} else {
+			SetPlayerColors (playerO, playerX);
+		}
 	}
 
 	void SetGameOverText(string value)
@@ -98,6 +127,7 @@ public class GameController : MonoBehaviour {
 	public void RestartGame()
 	{
 		playerSide = "X";
+		SetPlayerColors (playerX, playerO);
 		moveCount = 0;
 		gameOverPanel.SetActive(false);
 		restartButton.SetActive (false);
@@ -112,5 +142,14 @@ public class GameController : MonoBehaviour {
 			buttonList[i].GetComponentInParent<Button>().interactable = toggle;
 			if (toggle) buttonList [i].text = "";
 		}
+	}
+
+	void SetPlayerColors(Player newPlayer, Player oldPlayer)
+	{
+		newPlayer.panel.color = activePlayerColor.panelColor;
+		newPlayer.text.color = activePlayerColor.textColor;
+
+		oldPlayer.panel.color = inactivePlayerColor.panelColor;
+		oldPlayer.text.color = inactivePlayerColor.textColor;
 	}
 }
