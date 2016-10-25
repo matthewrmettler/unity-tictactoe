@@ -6,6 +6,7 @@ using System.Collections;
 public class Player {
 	public Image panel;
 	public Text text;
+	public Button button;
 }
 
 [System.Serializable]
@@ -24,11 +25,21 @@ public class GameController : MonoBehaviour {
 	private string playerSide;
 
 	public GameObject gameOverPanel;
-	public GameObject restartButton;
 	public Text gameOverText;
+
+	public GameObject restartButton;
+	public GameObject startInfo;
 
 	//Count the number of moves (to figure out when it's a tie/draw)
 	private int moveCount;
+
+	void StartGame()
+	{
+		//Enable all the buttons
+		SetBoardInteractable(true);
+		SetPlayerButtons (false);
+		startInfo.SetActive (false);
+	}
 	/**
 	 * This gets called when the game starts.
 	 **/
@@ -100,6 +111,7 @@ public class GameController : MonoBehaviour {
 		restartButton.SetActive (true);
 		if (winningPlayer == "draw") {
 			SetGameOverText("It's a draw!");
+			SetPlayerColorsInactive ();
 		} else {
 			SetGameOverText(winningPlayer + " Wins!");
 		}
@@ -126,13 +138,12 @@ public class GameController : MonoBehaviour {
 
 	public void RestartGame()
 	{
-		playerSide = "X";
-		SetPlayerColors (playerX, playerO);
 		moveCount = 0;
 		gameOverPanel.SetActive(false);
 		restartButton.SetActive (false);
-		//Enable all the buttons
-		SetBoardInteractable(true);
+		SetPlayerButtons (true);
+		SetPlayerColorsInactive ();
+		startInfo.SetActive (true);
 	}
 
 	public void SetBoardInteractable(bool toggle)
@@ -151,5 +162,31 @@ public class GameController : MonoBehaviour {
 
 		oldPlayer.panel.color = inactivePlayerColor.panelColor;
 		oldPlayer.text.color = inactivePlayerColor.textColor;
+	}
+
+	public void SetStartingSide(string startingSide) 
+	{
+		playerSide = startingSide;
+		if (playerSide == "X") {
+			SetPlayerColors (playerX, playerO);
+		} else {
+			SetPlayerColors (playerO, playerX);
+		}
+		StartGame ();
+	}
+
+	void SetPlayerButtons(bool toggle)
+	{
+		playerX.button.interactable = toggle;
+		playerO.button.interactable = toggle;
+	}
+
+	void SetPlayerColorsInactive() 
+	{
+		playerX.panel.color = inactivePlayerColor.panelColor;
+		playerX.text.color = inactivePlayerColor.textColor;
+
+		playerO.panel.color = inactivePlayerColor.panelColor;
+		playerO.text.color = inactivePlayerColor.textColor;
 	}
 }

@@ -25,6 +25,8 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+*.exe
+
 # =============== #
 # Unity generated #
 # ============ #
